@@ -1,0 +1,37 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Artist {
+  id     Int     @id @default(autoincrement())
+  name   String
+  events Event[]
+}
+
+model Event {
+  id             Int            @id @default(autoincrement())
+  title          String
+  artistId       Int
+  location       String
+  begin_datetime DateTime       @db.Timestamptz(0)
+  end_datetime   DateTime       @db.Timestamptz(0)
+  artist         Artist         @relation(fields: [artistId], references: [id])
+}
+
+/// This table is a partition table and requires additional setup for migrations. Visit https://pris.ly/d/partition-tables for more info.
+model tickets {
+  id             Int            @default(autoincrement())
+  event_id       Int
+  price          Decimal        @db.Decimal(10, 2)
+  isBought       Boolean        @default(false)
+  purchased_time DateTime?      @db.Timestamptz(6)
+  buyerEmail     String?
+
+  @@id([id, event_id], map: "seats_pkey")
+}

@@ -1,0 +1,11 @@
+# Use the OpenResty base image
+FROM openresty/openresty:alpine
+
+# Copy your custom Nginx configuration file to the container
+COPY nginx.conf /usr/local/openresty/nginx/conf/nginx.conf
+
+# Expose port 80
+EXPOSE 80
+
+# Start OpenResty when the container starts
+CMD ["openresty", "-g", "daemon off;"]
